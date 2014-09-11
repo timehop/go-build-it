@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Config Template for s3cmd
+read -d '' S3CFG_TMPL << CFG
+[default]
+access_key = AWS_ACCESS_KEY_ID
+bucket_location = US
+default_mime_type = binary/octet-stream
+delete_removed = False
+dry_run = False
+encoding = UTF-8
+encrypt = False
+follow_symlinks = False
+force = False
+get_continue = False
+gpg_command = None
+gpg_decrypt = %(gpg_command)s -d --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
+gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
+gpg_passphrase =
+guess_mime_type = True
+host_base = s3.amazonaws.com
+host_bucket = %(bucket)s.s3.amazonaws.com
+human_readable_sizes = False
+list_md5 = False
+log_target_prefix =
+preserve_attrs = True
+progress_meter = True
+proxy_host =
+proxy_port = 0
+recursive = False
+recv_chunk = 4096
+reduced_redundancy = False
+secret_key = AWS_SECRET_ACCESS_KEY
+send_chunk = 4096
+skip_existing = False
+socket_timeout = 300
+urlencoding_mode = normal
+use_https = False
+verbosity = WARNING
+CFG
+
+# Skip if not master
+if [[ "$TRAVIS_BRANCH" != "master" ]]; then
+  echo Not master branch. Skipping artifact build
+  exit 0
+fi
+
+GO_BUILD_DIR=/tmp/$TRAVIS_REPO_SLUG
+
+build() {
+  echo Making $GO_BUILD_DIR dir
+  mkdir -p $GO_BUILD_DIR
+
+  echo Building $2 from $1
+  godep go build -o $GO_BUILD_DIR/$2 $1
+}
+
+upload() {
+  FILENAME=$TRAVIS_REPO_SLUG-$TRAVIS_BUILD_NUMBER.tar.gz
+
+  if [[ ! -e $GO_BUILD_DIR ]]; then
+    echo Build dir does not exist: $GO_BUILD_DIR
+    exit 1
+  fi
+
+  cd $GO_BUILD_DIR
+
+  echo Artifact manifest
+  find .
+
+  echo Tar and gzipping
+  tar cfz $FILENAME --exclude=.git --exclude=.gitignore *
+
+  S3CFG=$GO_BUILD_DIR/s3cfg
+
+  echo Installing s3cmd
+  sudo apt-get install s3cmd
+  echo "$S3CFG_TMPL" | sed -e "s#AWS_ACCESS_KEY_ID#$AWS_ACCESS_KEY_ID#" -e "s#AWS_SECRET_ACCESS_KEY#$AWS_SECRET_ACCESS_KEY#" > $S3CFG
+
+  BUILD_S3_URL=s3://$AWS_S3_BUCKET/$TRAVIS_REPO_SLUG/$FILENAME
+
+  echo Uploading $BUILD_S3_URL
+  s3cmd put $GO_BUILD_DIR/$FILENAME $BUILD_S3_URL -c $S3CFG
+}
+
+if [ "$1" = "build" ]; then
+  build $2 $3
+elif [ "$1" = "upload" ]; then
+  upload
+fi
