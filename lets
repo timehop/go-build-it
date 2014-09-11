@@ -47,9 +47,15 @@ fi
 
 GO_BUILD_DIR=/tmp/$TRAVIS_REPO_SLUG
 
+check_installed() {
+  hash $1 2>/dev/null
+}
+
 build() {
   echo Making $GO_BUILD_DIR dir
   mkdir -p $GO_BUILD_DIR
+
+  check_installed godep || go get github.com/tools/godep
 
   echo Building $2 from $1
   godep go build -o $GO_BUILD_DIR/$2 $1
