@@ -62,7 +62,7 @@ build() {
 }
 
 upload() {
-  FILENAME=$TRAVIS_REPO_SLUG-$TRAVIS_BUILD_NUMBER.tar.gz
+  FILENAME=$APP_NAME-$TRAVIS_BUILD_NUMBER.tar.gz
 
   if [[ ! -e $GO_BUILD_DIR ]]; then
     echo Build dir does not exist: $GO_BUILD_DIR
@@ -83,7 +83,7 @@ upload() {
   sudo apt-get install s3cmd
   echo "$S3CFG_TMPL" | sed -e "s#AWS_ACCESS_KEY_ID#$AWS_ACCESS_KEY_ID#" -e "s#AWS_SECRET_ACCESS_KEY#$AWS_SECRET_ACCESS_KEY#" > $S3CFG
 
-  BUILD_S3_URL=s3://$AWS_S3_BUCKET/$TRAVIS_REPO_SLUG/$FILENAME
+  BUILD_S3_URL=s3://$AWS_S3_BUCKET/$APP_NAME/$FILENAME
 
   echo Uploading $BUILD_S3_URL
   s3cmd put $GO_BUILD_DIR/$FILENAME $BUILD_S3_URL -c $S3CFG

@@ -8,8 +8,8 @@ Usage
 
 Environment Variables Required:
 
-* `TRAVIS_REPO_SLUG`
 * `TRAVIS_BUILD_NUMBER`
+* `APP_NAME`
 * `AWS_ACCESS_KEY_ID`
 * `AWS_SECRET_ACCESS_KEY`
 * `AWS_S3_BUCKET`
