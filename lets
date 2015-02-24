@@ -51,6 +51,12 @@ check_installed() {
   hash $1 2>/dev/null
 }
 
+copy() {
+  echo Copying $1 into $GO_BUILD_DIR
+  mkdir -p $GO_BUILD_DIR
+  cp -R $1 $GO_BUILD_DIR/
+}
+
 build() {
   echo Making $GO_BUILD_DIR dir
   mkdir -p $GO_BUILD_DIR
@@ -91,6 +97,8 @@ upload() {
 
 if [ "$1" = "build" ]; then
   build $2 $3
+elif [ "$1" = "copy" ]; then
+  copy $2
 elif [ "$1" = "upload" ]; then
   upload
 fi
