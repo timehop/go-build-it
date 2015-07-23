@@ -78,11 +78,11 @@ upload() {
 
   cd $GO_BUILD_DIR
 
-  echo Artifact manifest
+  echo Artifact manifest from `pwd`
   find .
 
   echo Tar and gzipping
-  tar cfz $FILENAME --exclude=.git --exclude=.gitignore *
+  tar cfz $FILENAME --exclude=.git --exclude=.gitignore * || { echo 'tar failed' ; exit 1; }
 
   S3CFG=$GO_BUILD_DIR/s3cfg
 
