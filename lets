@@ -46,7 +46,7 @@ if [[ "$TRAVIS_BRANCH" != "master" ]]; then
   exit 0
 fi
 
-GO_BUILD_DIR=/tmp/$TRAVIS_REPO_SLUG
+GO_BUILD_DIR=/tmp/$TRAVIS_REPO_SLUG/timehop
 
 check_installed() {
   hash $1 2>/dev/null
