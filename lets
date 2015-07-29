@@ -42,8 +42,11 @@ CFG
 # Skip if not master
 echo "Currently on branch: $TRAVIS_BRANCH"
 if [[ "$TRAVIS_BRANCH" != "master" ]]; then
-  echo Not master branch. Skipping artifact build
-  exit 0
+  if [[ $OVERRIDE_MASTER_CHECK != 1 ]]; then
+      echo Not master branch. Skipping artifact build
+      exit 0
+  fi
+  echo Override enabled, continuing build
 fi
 
 GO_BUILD_DIR=/tmp/$TRAVIS_REPO_SLUG/timehop
