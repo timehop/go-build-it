@@ -100,7 +100,7 @@ upload() {
 
   if [ ! -z $GITHUB_TOKEN ]; then 
       go get github.com/timehop/goblet/...
-      create-release -repo="$APP_NAME" -release="$TRAVIS_BUILD_NUMBER"
+      create-release -repo="$APP_NAME" -release="$TRAVIS_BUILD_NUMBER" -sha="$CIRCLE_SHA1"
   fi
 }
 
