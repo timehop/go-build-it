@@ -50,6 +50,7 @@ if [[ "$TRAVIS_BRANCH" != "master" ]]; then
 fi
 
 GO_BUILD_DIR=/tmp/$TRAVIS_REPO_SLUG/timehop
+GO_ZIP_DIR=/tmp/$TRAVIS_REPO_SLUG/timehop
 
 check_installed() {
   hash $1 2>/dev/null
@@ -101,6 +102,17 @@ upload() {
   if [ ! -z $GITHUB_TOKEN ]; then 
       go get github.com/timehop/goblet/...
       create-release -repo="$CIRCLE_PROJECT_REPONAME" -release="$TRAVIS_BUILD_NUMBER" -sha="$CIRCLE_SHA1"
+
+      echo Making $GO_ZIP_DIR dir
+      mkdir -p $GO_ZIP_DIR
+
+      ZIP_FILENAME=$APP_NAME-$TRAVIS_BUILD_NUMBER.zip
+      ZIP_S3_URL=s3://$AWS_S3_BUCKET/$APP_NAME/$ZIP_FILENAME
+
+      echo Uploading $ZIP_FILENAME
+  
+      wget -0 $GO_ZIP_DIR https://github.com/timehop/apicard/archive/$TRAVIS_BUILD_NUMBER.zip
+      s3cmd put $GO_ZIP_DIR/$TRAVIS_BUILD_NUMBER.zip $ZIP_S3_URL -c $S3CFG
   fi
 }
 
