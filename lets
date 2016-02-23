@@ -109,10 +109,11 @@ upload() {
       ZIP_FILENAME=$APP_NAME-$TRAVIS_BUILD_NUMBER.zip
       ZIP_S3_URL=s3://$AWS_S3_BUCKET/$APP_NAME/$ZIP_FILENAME
 
-      echo Uploading $ZIP_FILENAME
   
-      wget -0 $GO_ZIP_DIR https://github.com/timehop/apicard/archive/$TRAVIS_BUILD_NUMBER.zip
-      s3cmd put $GO_ZIP_DIR/$TRAVIS_BUILD_NUMBER.zip $ZIP_S3_URL -c $S3CFG
+      echo Fetching $ZIP_FILENAME
+      wget -O "$GO_ZIP_DIR/$ZIP_FILENAME" "https://github.com/timehop/apicard/archive/$TRAVIS_BUILD_NUMBER.zip"
+      echo "Uploading $ZIP_FILENAME from $GO_ZIP_DIR to $ZIP_S3_URL"
+      s3cmd put "$GO_ZIP_DIR/$ZIP_FILENAME" "$ZIP_S3_URL" -c $S3CFG
   fi
 }
 
