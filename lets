@@ -111,7 +111,9 @@ upload() {
 
   
       echo Fetching $ZIP_FILENAME
-      wget -O "$GO_ZIP_DIR/$ZIP_FILENAME" "https://github.com/timehop/apicard/archive/$TRAVIS_BUILD_NUMBER.zip"
+      ZIPBALL_PATH="https://github.com/timehop/$APP_NAME/archive/$ZIP_FILENAME"
+      curl -L -u $GITHUB_TOKEN:x-oauth-basic  "$ZIPBALL_PATH" > "$GO_ZIP_DIR/$ZIP_FILENAME"
+
       echo "Uploading $ZIP_FILENAME from $GO_ZIP_DIR to $ZIP_S3_URL"
       s3cmd put "$GO_ZIP_DIR/$ZIP_FILENAME" "$ZIP_S3_URL" -c $S3CFG
   fi
