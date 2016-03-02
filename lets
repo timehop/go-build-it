@@ -106,8 +106,8 @@ upload() {
       echo Making $GO_ZIP_DIR dir
       mkdir -p $GO_ZIP_DIR
 
-      ZIP_FILENAME=$APP_NAME-$TRAVIS_BUILD_NUMBER.zip
-      ZIP_S3_URL=s3://$AWS_S3_BUCKET/$APP_NAME/$ZIP_FILENAME
+      ZIP_FILENAME="$TRAVIS_BUILD_NUMBER.zip"
+      ZIP_S3_URL="s3://$AWS_S3_BUCKET/$APP_NAME/$APP_NAME-$ZIP_FILENAME"
 
   
       echo Fetching $ZIP_FILENAME
