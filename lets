@@ -39,16 +39,6 @@ use_https = False
 verbosity = WARNING
 CFG
 
-# Skip if not master
-echo "Currently on branch: $TRAVIS_BRANCH"
-if [[ "$TRAVIS_BRANCH" != "master" ]]; then
-  if [[ $OVERRIDE_MASTER_CHECK != 1 ]]; then
-      echo Not master branch. Skipping artifact build
-      exit 0
-  fi
-  echo Override enabled, continuing build
-fi
-
 GO_BUILD_DIR=/tmp/$TRAVIS_REPO_SLUG/timehop
 GO_ZIP_DIR=/tmp/$TRAVIS_REPO_SLUG/timehop
 
@@ -73,6 +63,16 @@ build() {
 }
 
 upload() {
+  # Skip if not master
+  echo "Currently on branch: $TRAVIS_BRANCH"
+  if [[ "$TRAVIS_BRANCH" != "master" ]]; then
+    if [[ $OVERRIDE_MASTER_CHECK != 1 ]]; then
+        echo Not master branch. Skipping artifact build
+        exit 0
+    fi
+    echo Override enabled, continuing build
+  fi
+  
   FILENAME=$APP_NAME-$TRAVIS_BUILD_NUMBER.tar.gz
 
   if [[ ! -e $GO_BUILD_DIR ]]; then
