@@ -56,10 +56,9 @@ build() {
   echo Making $GO_BUILD_DIR dir
   mkdir -p $GO_BUILD_DIR
 
-  check_installed godep || curl -L -o ~/bin/godep "https://github.com/tools/godep/releases/download/v58/godep_linux_amd64" && chmod 755 ~/bin/godep
 
   echo Building $2 from $1
-  godep go build -o $GO_BUILD_DIR/$2 $1
+  go build -o $GO_BUILD_DIR/$2 $1
 }
 
 upload() {
