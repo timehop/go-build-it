@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Config Template for s3cmd
 read -d '' S3CFG_TMPL << CFG
 [default]
@@ -71,7 +73,7 @@ upload() {
     fi
     echo Override enabled, continuing build
   fi
-  
+
   FILENAME=$APP_NAME-$TRAVIS_BUILD_NUMBER.tar.gz
 
   if [[ ! -e $GO_BUILD_DIR ]]; then
@@ -98,7 +100,7 @@ upload() {
   echo Uploading $BUILD_S3_URL
   s3cmd put $GO_BUILD_DIR/$FILENAME $BUILD_S3_URL -c $S3CFG
 
-  if [ ! -z $GITHUB_TOKEN ]; then 
+  if [ ! -z $GITHUB_TOKEN ]; then
       go get github.com/timehop/goblet/...
       create-release -repo="$CIRCLE_PROJECT_REPONAME" -release="$TRAVIS_BUILD_NUMBER" -sha="$CIRCLE_SHA1"
 
@@ -108,7 +110,6 @@ upload() {
       ZIP_FILENAME="$TRAVIS_BUILD_NUMBER.zip"
       ZIP_S3_URL="s3://$AWS_S3_BUCKET/$APP_NAME/$APP_NAME-$ZIP_FILENAME"
 
-  
       echo Fetching $ZIP_FILENAME
       ZIPBALL_PATH="https://github.com/timehop/$APP_NAME/archive/$ZIP_FILENAME"
       curl -L -u $GITHUB_TOKEN:x-oauth-basic  "$ZIPBALL_PATH" > "/tmp/$ZIP_FILENAME"
